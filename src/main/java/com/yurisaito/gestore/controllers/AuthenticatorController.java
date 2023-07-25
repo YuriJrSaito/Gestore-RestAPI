@@ -34,7 +34,7 @@ public class AuthenticatorController {
 	private TokenService tokenService;
 	
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid AuthenticationDTO data){
+    public ResponseEntity<Object> login(@RequestBody @Valid AuthenticationDTO data) {
 
     	UsernamePasswordAuthenticationToken usernamePassword = 
     			new UsernamePasswordAuthenticationToken(data.username(), data.password());

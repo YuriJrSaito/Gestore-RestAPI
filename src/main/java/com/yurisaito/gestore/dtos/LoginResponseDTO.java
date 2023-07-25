@@ -1,5 +1,7 @@
 package com.yurisaito.gestore.dtos;
 
-public record LoginResponseDTO(String token) {
+import jakarta.validation.constraints.NotBlank;
+
+public record LoginResponseDTO(@NotBlank String token) {
     
 }

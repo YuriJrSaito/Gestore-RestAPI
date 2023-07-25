@@ -1,5 +1,7 @@
 package com.yurisaito.gestore.dtos;
 
-public record AuthenticationDTO(String username, String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record AuthenticationDTO(@NotBlank String username, @NotBlank String password) {
 
 }
