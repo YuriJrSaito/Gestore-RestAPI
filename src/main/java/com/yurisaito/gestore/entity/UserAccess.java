@@ -1,6 +1,5 @@
 package com.yurisaito.gestore.entity;
 
-import java.io.Serializable;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.List;
@@ -24,7 +23,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class UserAccess implements Serializable, UserDetails{
+public class UserAccess implements UserDetails{
 	private static final long serialVersionUID = 1L;
 	
 	@Id

@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  gestore-db:
+    image: postgres:latest
+    container_name: gestore-db
+    restart: always
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=sysadmin123
+      - POSTGRES_DB=gestore
+    ports:
+      - '5432:5432'
+  
+  cache: 
+    container_name: cache
+    hostname: cache
+    image: redis:latest
+    command: redis-server --save "" --appendonly no --protected-mode no
+    ports:
+      - '6379:6379'
+
+  gestore:
+    container_name: gestore
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://gestore-db:5432/gestore
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=sysadmin123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_DATA_REDIS_HOST=cache
+
+    depends_on:
+      - gestore-db
+      - cache
+    

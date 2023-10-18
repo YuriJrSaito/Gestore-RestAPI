@@ -8,6 +8,7 @@ class GestoreApplicationTests {
 
 	@Test
 	void contextLoads() {
+		
 	}
 
 }
