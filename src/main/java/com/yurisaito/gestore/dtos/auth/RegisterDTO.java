@@ -1,4 +1,4 @@
-package com.yurisaito.gestore.dtos;
+package com.yurisaito.gestore.dtos.auth;
 
 import com.yurisaito.gestore.entity.UserRole;
 

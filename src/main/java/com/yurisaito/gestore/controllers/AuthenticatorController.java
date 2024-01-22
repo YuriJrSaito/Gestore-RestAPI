@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.yurisaito.gestore.dtos.AuthenticationDTO;
-import com.yurisaito.gestore.dtos.LoginResponseDTO;
-import com.yurisaito.gestore.dtos.RegisterDTO;
+import com.yurisaito.gestore.dtos.auth.AuthenticationDTO;
+import com.yurisaito.gestore.dtos.auth.LoginResponseDTO;
+import com.yurisaito.gestore.dtos.auth.RegisterDTO;
 import com.yurisaito.gestore.entity.UserAccess;
 import com.yurisaito.gestore.repository.AccessRepository;
 import com.yurisaito.gestore.services.TokenService;
