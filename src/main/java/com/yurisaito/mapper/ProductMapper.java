@@ -1,7 +1,8 @@
 package com.yurisaito.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
@@ -13,7 +14,12 @@ public interface ProductMapper{
 
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
 
-    @Mapping(target = "id", ignore = true)
     Product productCreateRequestDTOToProduct(ProductCreateRequestDTO dto);
+
+    Product productDtoToProduct(ProductDTO dto);
+    
+    List<ProductDTO> productToProductDtos(List<Product> products);
+
+    ProductDTO productToProductDto(Product product);
     
 }

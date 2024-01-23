@@ -3,10 +3,10 @@ package com.yurisaito.gestore.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.yurisaito.exception.ProductNameDuplicateException;
 import com.yurisaito.exception.ProductNotFoundException;
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
 import com.yurisaito.gestore.dtos.product.ProductDTO;
-import com.yurisaito.gestore.dtos.product.ProductUpdateRequestDTO;
 import com.yurisaito.gestore.entity.Product;
 import com.yurisaito.gestore.repository.ProductRepository;
 import com.yurisaito.mapper.ProductMapper;
@@ -25,30 +25,34 @@ public class ProductService {
 
     public List<ProductDTO> getAllProductDTOs() {
         List<Product> products = productRepository.findAll();
-        return productMapper.mapToDTOs(products);
+        return productMapper.productToProductDtos(products);
     }
 
     public ProductDTO getProductDTOById(UUID productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
-        return productMapper.mapToDTO(product);
+        return productMapper.productToProductDto(product);
     }
 
     public ProductDTO createProduct(ProductCreateRequestDTO requestDTO) {
-        Product newProduct = productMapper.mapToEntity(requestDTO);
+        if(productRepository.findByName(requestDTO.name()) != null){
+            throw new ProductNameDuplicateException("Product with the same name already exists");
+        }
+
+        Product newProduct = productMapper.productCreateRequestDTOToProduct(requestDTO);
         Product savedProduct = productRepository.save(newProduct);
-        return productMapper.mapToDTO(savedProduct);
+        return productMapper.productToProductDto(savedProduct);
     }
 
-    public ProductDTO updateProduct(UUID productId, ProductUpdateRequestDTO requestDTO) {
-        Product existingProduct = productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
+    public ProductDTO updateProduct(ProductDTO requestDTO) {
+        if(!productRepository.existsById(requestDTO.id())) {
+            throw new ProductNotFoundException("Product not found with ID: " + requestDTO.id());
+        }
 
-        // Atualize os atributos do produto com base nos dados fornecidos em requestDTO
-        existingProduct = existingProduct.withName(requestDTO.name()).withPrice(requestDTO.price());
+        Product updatedProduct = productMapper.productDtoToProduct(requestDTO);
+        updatedProduct = productRepository.save(updatedProduct);
 
-        Product updatedProduct = productRepository.save(existingProduct);
-        return productMapper.mapToDTO(updatedProduct);
+        return productMapper.productToProductDto(updatedProduct);
     }
 
     public void deleteProduct(UUID productId) {

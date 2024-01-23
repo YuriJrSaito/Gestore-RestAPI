@@ -10,7 +10,6 @@ import com.yurisaito.error.ErrorResponse;
 import com.yurisaito.exception.ProductNotFoundException;
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
 import com.yurisaito.gestore.dtos.product.ProductDTO;
-import com.yurisaito.gestore.dtos.product.ProductUpdateRequestDTO;
 import com.yurisaito.gestore.services.ProductService;
 
 import java.util.List;
@@ -52,12 +51,10 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/{productId}")
     public ResponseEntity<?> updateProduct(
-            @PathVariable UUID productId,
-            @RequestBody @Valid ProductUpdateRequestDTO productUpdateRequestDTO) {
+            @RequestBody @Valid ProductDTO productDto) {
         try {
-            ProductDTO updatedProduct = productService.updateProduct(productId, productUpdateRequestDTO);
+            ProductDTO updatedProduct = productService.updateProduct(productDto);
             return ResponseEntity.ok(updatedProduct);
         } catch (ProductNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
