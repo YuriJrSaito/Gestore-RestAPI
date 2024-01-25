@@ -3,10 +3,6 @@ package com.yurisaito.gestore.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,45 +11,40 @@ import org.springframework.web.bind.annotation.RestController;
 import com.yurisaito.gestore.dtos.auth.AuthenticationDTO;
 import com.yurisaito.gestore.dtos.auth.LoginResponseDTO;
 import com.yurisaito.gestore.dtos.auth.RegisterDTO;
-import com.yurisaito.gestore.entity.UserAccess;
-import com.yurisaito.gestore.repository.AccessRepository;
-import com.yurisaito.gestore.services.TokenService;
-
+import com.yurisaito.gestore.error.ErrorResponse;
+import com.yurisaito.gestore.exception.UsernameIsAlredyTaken;
+import com.yurisaito.gestore.services.AuthenticationService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/auth")
 public class AuthenticatorController {
-	@Autowired
-	AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private AccessRepository accessRepository;
 
 	@Autowired
-	private TokenService tokenService;
-	
-    @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody @Valid AuthenticationDTO data) {
+	AuthenticationService authenticationService;
 
-    	UsernamePasswordAuthenticationToken usernamePassword = 
-    			new UsernamePasswordAuthenticationToken(data.username(), data.password());
-    	Authentication auth = this.authenticationManager.authenticate(usernamePassword);
-    	
-		var token = tokenService.generateToken((UserAccess)auth.getPrincipal());
-    	return ResponseEntity.ok(new LoginResponseDTO(token));
-    }
-	
+	@PostMapping("/authenticate")
+	public ResponseEntity<Object> login(@RequestBody @Valid AuthenticationDTO authDto) {
+		try {
+			LoginResponseDTO response = authenticationService.authenticate(authDto);
+			return ResponseEntity.ok(response);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ErrorResponse("Failed to authenticate this user"));
+		}
+	}
+
 	@PostMapping("/register")
 	public ResponseEntity<Object> register(@RequestBody @Valid RegisterDTO registerDto) {
-		
-		if(this.accessRepository.findByUsername(registerDto.username()) != null)
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username is already taken");
-		
-		String encryptedPassword = new BCryptPasswordEncoder().encode(registerDto.password());
-		UserAccess newUserAccess = new UserAccess(registerDto.username(), encryptedPassword, registerDto.role());
-	
-		this.accessRepository.save(newUserAccess);
-		return ResponseEntity.ok().build();
+		try {
+			LoginResponseDTO response = authenticationService.register(registerDto);
+			return ResponseEntity.ok(response);
+		} 
+		catch(UsernameIsAlredyTaken e){
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+		}catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ErrorResponse("User cannot be registered"));
+		}
 	}
 }

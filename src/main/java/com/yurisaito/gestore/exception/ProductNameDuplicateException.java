@@ -1,4 +1,4 @@
-package com.yurisaito.exception;
+package com.yurisaito.gestore.exception;
 
 public class ProductNameDuplicateException extends RuntimeException {
 

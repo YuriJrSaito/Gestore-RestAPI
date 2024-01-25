@@ -6,29 +6,29 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.yurisaito.error.ErrorResponse;
-import com.yurisaito.exception.ProductNotFoundException;
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
 import com.yurisaito.gestore.dtos.product.ProductDTO;
+import com.yurisaito.gestore.error.ErrorResponse;
+import com.yurisaito.gestore.exception.ProductNotFoundException;
 import com.yurisaito.gestore.services.ProductService;
 
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/v1/product")
 public class ProductController {
 
     @Autowired
     private ProductService productService;
 
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         List<ProductDTO> products = productService.getAllProductDTOs();
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/getOne/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable UUID productId) {
         try {
             ProductDTO productDTO = productService.getProductDTOById(productId);
@@ -38,7 +38,7 @@ public class ProductController {
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<?> createProduct(
             @RequestBody @Valid ProductCreateRequestDTO productCreateRequestDTO) {
         try {
@@ -51,6 +51,7 @@ public class ProductController {
         }
     }
 
+    @PutMapping("/update")
     public ResponseEntity<?> updateProduct(
             @RequestBody @Valid ProductDTO productDto) {
         try {
@@ -61,7 +62,7 @@ public class ProductController {
         }
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("delete/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable UUID productId) {
         try {

@@ -1,4 +1,4 @@
-package com.yurisaito.mapper;
+package com.yurisaito.gestore.mapper;
 
 import java.util.List;
 

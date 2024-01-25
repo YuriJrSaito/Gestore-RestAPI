@@ -1,4 +1,4 @@
-package com.yurisaito.error;
+package com.yurisaito.gestore.error;
 
 public class ErrorResponse {
 
