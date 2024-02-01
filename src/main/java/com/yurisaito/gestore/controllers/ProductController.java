@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
 import com.yurisaito.gestore.dtos.product.ProductDTO;
 import com.yurisaito.gestore.error.ErrorResponse;
+import com.yurisaito.gestore.exception.CategoryNotFoundException;
+import com.yurisaito.gestore.exception.ProductNameDuplicateException;
 import com.yurisaito.gestore.exception.ProductNotFoundException;
 import com.yurisaito.gestore.services.ProductService;
 
@@ -44,8 +46,11 @@ public class ProductController {
         try {
             ProductDTO createdProduct = productService.createProduct(productCreateRequestDTO);
             return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
+        } catch (ProductNameDuplicateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (CategoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (Exception e) {
-            // Log da exceção ou qualquer outra ação necessária
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ErrorResponse("Failed to create product"));
         }
@@ -57,8 +62,15 @@ public class ProductController {
         try {
             ProductDTO updatedProduct = productService.updateProduct(productDto);
             return ResponseEntity.ok(updatedProduct);
+        } catch (ProductNameDuplicateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (CategoryNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (ProductNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Failed to update product"));
         }
     }
 
@@ -68,8 +80,6 @@ public class ProductController {
         try {
             productService.deleteProduct(productId);
         } catch (ProductNotFoundException ignored) {
-            // Ignorado, pois não precisamos retornar um status HTTP específico ao excluir
-            // um produto que não existe.
         }
     }
 

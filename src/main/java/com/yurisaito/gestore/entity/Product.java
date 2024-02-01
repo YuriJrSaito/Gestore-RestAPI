@@ -49,6 +49,24 @@ public class Product implements Serializable {
         this.category = category;
     }
 
+    public Product(UUID id, String name, String description, BigDecimal price, int stockQuantity,
+                   String supplier, String imageUrl, boolean active, Category category) {
+        
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+        this.supplier = supplier;
+        this.imageUrl = imageUrl;
+        this.active = active;
+        this.category = category;
+    }
+
+    public void setId(UUID id){
+        this.id = id;
+    }
+
     public UUID getId() {
         return id;
     }
@@ -119,7 +137,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("Product{id=%s, name='%s', price=%.2f}", id, name, price);
+        return String.format("Product{id=%s, name='%s', price=%.2f} " + category , id, name, price);
     }
 
     @Override

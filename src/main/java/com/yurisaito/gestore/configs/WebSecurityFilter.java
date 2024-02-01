@@ -42,18 +42,31 @@ public class WebSecurityFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		final String token = this.recoverToken(request);
+		String token = this.recoverToken(request);
 
 		if (token == null) {
 			filterChain.doFilter(request, response);
 			return;
 		}
+		
+		boolean isValid = tokenService.validateToken(token);
 
-		final String username = tokenService.validateToken(token);
+		if(!isValid){
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		String username = tokenService.getUsernameFromToken(token);
+
+		if(username == null){
+			filterChain.doFilter(request, response);
+			return;
+		}
+
 		Optional<UserAccess> user = accessRepository.findByUsername(username);
 
 		if (username != null && user != null) {
-			UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+			UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
 			UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
 					userDetails,
@@ -71,6 +84,6 @@ public class WebSecurityFilter extends OncePerRequestFilter {
 		var authReader = request.getHeader("Authorization");
 		if (authReader == null)
 			return null;
-		return authReader.replace("Bearer", "");
+		return authReader.replace("Bearer ", "");
 	}
 }

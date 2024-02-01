@@ -59,4 +59,9 @@ public class Category implements Serializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	@Override
+    public String toString() {
+        return String.format("Category{id=%s, name='%s', description='%s'}", id, name, description);
+    }
 }
