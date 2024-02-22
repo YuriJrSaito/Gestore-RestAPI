@@ -13,6 +13,6 @@ public record ProductCreateRequestDTO(
     @NotNull int stockQuantity,
     String supplier,
     String imageUrl,
+    boolean active,
     @NotNull UUID categoryId) {
-
 }

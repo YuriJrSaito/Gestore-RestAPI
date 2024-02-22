@@ -3,15 +3,22 @@ package com.yurisaito.gestore.mapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
-import com.yurisaito.gestore.dtos.product.ProductDTO;
+import com.yurisaito.gestore.dtos.product.ProductResponseDTO;
+import com.yurisaito.gestore.dtos.product.ProductRequestDTO;
 import com.yurisaito.gestore.entity.Category;
 import com.yurisaito.gestore.entity.Product;
+import com.yurisaito.gestore.exception.CategoryNotFoundException;
+import com.yurisaito.gestore.repository.CategoryRepository;
 
 @Service
 public class ProductMapper {
+
+    @Autowired
+    CategoryRepository categoryRepository;
 
     public Product productCreateRequestDTOToProduct(ProductCreateRequestDTO dto) {
         if (dto == null) {
@@ -25,13 +32,18 @@ public class ProductMapper {
         product.setStockQuantity(dto.stockQuantity());
         product.setSupplier(dto.supplier());
         product.setImageUrl(dto.imageUrl());
+        product.setActive(dto.active());
         return product;
     }
 
-    public Product productDtoToProduct(ProductDTO dto) {
+    public Product productUpdateDtoToProduct(ProductRequestDTO dto) {
         if (dto == null) {
             return null;
         }
+
+        Category existedCategory = categoryRepository.findById(dto.categoryId()).orElseThrow(
+                () -> new CategoryNotFoundException(
+                        "Category not found with ID: " + dto.categoryId()));
 
         Product product = new Product(
                 dto.id(),
@@ -42,23 +54,23 @@ public class ProductMapper {
                 dto.supplier(),
                 dto.imageUrl(),
                 dto.active(),
-                null);
+                existedCategory);
 
         return product;
     }
 
-    public List<ProductDTO> productsToProductDtos(List<Product> products) {
+    public List<ProductResponseDTO> productsToProductDtos(List<Product> products) {
         if (products == null || products.isEmpty()) {
             return null;
         }
 
-        List<ProductDTO> productDTOs = new ArrayList<>();
+        List<ProductResponseDTO> productDTOs = new ArrayList<>();
 
         for (Product product : products) {
             Category category = new Category(product.getCategory().getId(), product.getCategory().getName(),
                     product.getCategory().getDescription());
 
-            ProductDTO productDTO = new ProductDTO(
+            ProductResponseDTO productDTO = new ProductResponseDTO(
                     product.getId(),
                     product.getName(),
                     product.getDescription(),
@@ -67,14 +79,14 @@ public class ProductMapper {
                     product.getSupplier(),
                     product.getImageUrl(),
                     product.isActive(),
-                    null);
+                    category);
             productDTOs.add(productDTO);
         }
 
         return productDTOs;
     }
 
-    public ProductDTO productToProductDto(Product product) {
+    public ProductResponseDTO ProductToProductResponseDTO(Product product) {
         if (product == null) {
             return null;
         }
@@ -82,7 +94,7 @@ public class ProductMapper {
         Category category = new Category(product.getCategory().getId(), product.getCategory().getName(),
                 product.getCategory().getDescription());
 
-        ProductDTO productDTO = new ProductDTO(
+        ProductResponseDTO productDTO = new ProductResponseDTO(
                 product.getId(),
                 product.getName(),
                 product.getDescription(),
@@ -91,7 +103,7 @@ public class ProductMapper {
                 product.getSupplier(),
                 product.getImageUrl(),
                 product.isActive(),
-                null);
+                category);
 
         return productDTO;
     }

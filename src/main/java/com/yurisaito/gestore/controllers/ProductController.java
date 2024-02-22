@@ -7,11 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
-import com.yurisaito.gestore.dtos.product.ProductDTO;
-import com.yurisaito.gestore.error.ErrorResponse;
-import com.yurisaito.gestore.exception.CategoryNotFoundException;
-import com.yurisaito.gestore.exception.ProductNameDuplicateException;
-import com.yurisaito.gestore.exception.ProductNotFoundException;
+import com.yurisaito.gestore.dtos.product.ProductRequestDTO;
+import com.yurisaito.gestore.dtos.product.ProductResponseDTO;
 import com.yurisaito.gestore.services.ProductService;
 
 import java.util.List;
@@ -25,67 +22,32 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<ProductDTO>> getAllProducts() {
-        List<ProductDTO> products = productService.getAllProductDTOs();
+    public ResponseEntity<List<ProductResponseDTO>> getAllProducts() {
+        List<ProductResponseDTO> products = productService.getAllProductDTOs();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/getOne/{productId}")
     public ResponseEntity<?> getProductById(@PathVariable UUID productId) {
-        try {
-            ProductDTO productDTO = productService.getProductDTOById(productId);
-            return ResponseEntity.ok(productDTO);
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-        }
+        ProductResponseDTO productDTO = productService.getProductDTOById(productId);
+        return ResponseEntity.ok(productDTO);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createProduct(
-            @RequestBody @Valid ProductCreateRequestDTO productCreateRequestDTO) {
-        try {
-            ProductDTO createdProduct = productService.createProduct(productCreateRequestDTO);
-            return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
-        } catch (ProductNameDuplicateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (CategoryNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Failed to create product"));
-        }
+    public ResponseEntity<?> createProduct(@RequestBody @Valid ProductCreateRequestDTO productCreateRequestDTO) {
+        ProductResponseDTO createdProduct = productService.createProduct(productCreateRequestDTO);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateProduct(
-            @RequestBody @Valid ProductDTO productDto) {
-        try {
-            ProductDTO updatedProduct = productService.updateProduct(productDto);
-            return ResponseEntity.ok(updatedProduct);
-        } catch (ProductNameDuplicateException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (CategoryNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ErrorResponse("Failed to update product"));
-        }
+    public ResponseEntity<?> updateProduct(@RequestBody @Valid ProductRequestDTO productDto) {
+        ProductResponseDTO updatedProduct = productService.updateProduct(productDto);
+        return ResponseEntity.ok(updatedProduct);
     }
 
-    @DeleteMapping("delete/{productId}")
+    @DeleteMapping("/delete/{productId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable UUID productId) {
-        try {
-            productService.deleteProduct(productId);
-        } catch (ProductNotFoundException ignored) {
-        }
-    }
-
-    // Tratamento global de exceções
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleProductNotFoundException(ProductNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(ex.getMessage()));
+        productService.deleteProduct(productId);
     }
 }

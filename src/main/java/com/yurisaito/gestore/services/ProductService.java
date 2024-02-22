@@ -1,10 +1,12 @@
 package com.yurisaito.gestore.services;
 
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yurisaito.gestore.dtos.product.ProductCreateRequestDTO;
-import com.yurisaito.gestore.dtos.product.ProductDTO;
+import com.yurisaito.gestore.dtos.product.ProductRequestDTO;
+import com.yurisaito.gestore.dtos.product.ProductResponseDTO;
 import com.yurisaito.gestore.entity.Category;
 import com.yurisaito.gestore.entity.Product;
 import com.yurisaito.gestore.exception.CategoryNotFoundException;
@@ -15,7 +17,6 @@ import com.yurisaito.gestore.repository.CategoryRepository;
 import com.yurisaito.gestore.repository.ProductRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,19 +30,19 @@ public class ProductService {
 
     @Autowired
     private CategoryRepository categoryRepository;
-
-    public List<ProductDTO> getAllProductDTOs() {
+    
+    public List<ProductResponseDTO> getAllProductDTOs() {
         List<Product> products = productRepository.findAll();
         return productMapper.productsToProductDtos(products);
     }
 
-    public ProductDTO getProductDTOById(UUID productId) {
+    public ProductResponseDTO getProductDTOById(UUID productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found with ID: " + productId));
-        return productMapper.productToProductDto(product);
+        return productMapper.ProductToProductResponseDTO(product);
     }
 
-    public ProductDTO createProduct(ProductCreateRequestDTO requestDTO) {
+    public ProductResponseDTO createProduct(ProductCreateRequestDTO requestDTO) {
         if (productRepository.findByName(requestDTO.name()) != null) {
             throw new ProductNameDuplicateException("Product with the same name already exists");
         }
@@ -54,28 +55,23 @@ public class ProductService {
 
         newProduct.setCategory(category);
         Product savedProduct = productRepository.save(newProduct);
-        return productMapper.productToProductDto(savedProduct);
+        return productMapper.ProductToProductResponseDTO(savedProduct);
     }
 
-    // verificar o produto com o mesmo nome não possui o mesmo id
-    public ProductDTO updateProduct(ProductDTO requestDTO) {
+    public ProductResponseDTO updateProduct(ProductRequestDTO requestDTO) {
         if (!productRepository.existsById(requestDTO.id())) {
             throw new ProductNotFoundException("Product not found with ID: " + requestDTO.id());
         }
 
-        if (productRepository.findByName(requestDTO.name()) != null) {
+        if (productRepository.findByNameAndIdNot(requestDTO.name(), requestDTO.id()) != null) {
             throw new ProductNameDuplicateException("Product with the same name already exists");
         }
 
-        Category category = categoryRepository.findById(requestDTO.categoryId())
-                .orElseThrow(() -> new CategoryNotFoundException(
-                        "Category not found with ID: " + requestDTO.categoryId()));
+        Product updatedProduct = productMapper.productUpdateDtoToProduct(requestDTO);
 
-        Product updatedProduct = productMapper.productDtoToProduct(requestDTO);
-        updatedProduct.setCategory(category);
         updatedProduct = productRepository.save(updatedProduct);
 
-        return productMapper.productToProductDto(updatedProduct);
+        return productMapper.ProductToProductResponseDTO(updatedProduct);
     }
 
     public void deleteProduct(UUID productId) {

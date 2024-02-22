@@ -39,8 +39,8 @@ public class AuthenticationService {
     }
 
     public LoginResponseDTO register(RegisterDTO dto) {
-        if (accessRepository.findByUsername(dto.username()).isPresent()){
-            throw new UsernameIsAlredyTaken("Username "+dto.username()+" is alredy taken");
+        if (accessRepository.findByUsername(dto.username()).isPresent()) {
+            throw new UsernameIsAlredyTaken("Username " + dto.username() + " is alredy taken");
         }
         final String encryptedPassword = passwordEncoder.encode(dto.password());
         UserAccess newUserAccess = new UserAccess(dto.username(), encryptedPassword, dto.role());
