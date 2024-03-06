@@ -38,14 +38,13 @@ public class AuthenticationService {
         return new LoginResponseDTO(token);
     }
 
-    public LoginResponseDTO register(RegisterDTO dto) {
-        if (accessRepository.findByUsername(dto.username()).isPresent()) {
-            throw new UsernameIsAlredyTaken("Username " + dto.username() + " is alredy taken");
+    public UserAccess register(RegisterDTO access) {
+        if (accessRepository.findByUsername(access.username()).isPresent()) {
+            throw new UsernameIsAlredyTaken("Username " + access.username() + " is alredy taken");
         }
-        final String encryptedPassword = passwordEncoder.encode(dto.password());
-        UserAccess newUserAccess = new UserAccess(dto.username(), encryptedPassword, dto.role());
-        accessRepository.save(newUserAccess);
-        final String token = tokenService.generateToken(newUserAccess);
-        return new LoginResponseDTO(token);
+        final String encryptedPassword = passwordEncoder.encode(access.password());
+        UserAccess newUserAccess = new UserAccess(access.username(), encryptedPassword, access.role());
+        newUserAccess = accessRepository.save(newUserAccess);
+        return newUserAccess;
     }
 }

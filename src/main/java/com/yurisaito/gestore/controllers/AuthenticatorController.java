@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.yurisaito.gestore.dtos.auth.AuthenticationDTO;
 import com.yurisaito.gestore.dtos.auth.LoginResponseDTO;
 import com.yurisaito.gestore.dtos.auth.RegisterDTO;
+import com.yurisaito.gestore.entity.UserAccess;
 import com.yurisaito.gestore.error.ErrorResponse;
 import com.yurisaito.gestore.exception.UsernameIsAlredyTaken;
 import com.yurisaito.gestore.services.AuthenticationService;
@@ -37,7 +38,7 @@ public class AuthenticatorController {
 	@PostMapping("/register")
 	public ResponseEntity<Object> register(@RequestBody @Valid RegisterDTO registerDto) {
 		try {
-			LoginResponseDTO response = authenticationService.register(registerDto);
+			UserAccess response = authenticationService.register(registerDto);
 			return ResponseEntity.ok(response);
 		} 
 		catch(UsernameIsAlredyTaken e){

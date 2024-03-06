@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,19 +26,34 @@ public class Seller implements Serializable {
     private String email;
     private String phone;
     private LocalDate registrationDate;
+    @Column(unique = true)
+    private String cpf;
+    private Boolean isActive;
 
     @OneToOne(cascade = CascadeType.ALL)
     private UserAccess access;
 
     public Seller() {
+        this.id = UUID.randomUUID();
+        this.isActive = true;
     }
 
-    public Seller(String name, String email, String phone, LocalDate registrationDate, UserAccess userAccess) {
+    public Seller(String name, String email, String phone, LocalDate registrationDate, String cpf) {
+        this();
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.registrationDate = registrationDate;
-        this.access = userAccess;
+        this.cpf = cpf;
+    }
+
+    public Seller(UUID id, String name, String email, String phone, LocalDate registrationDate, String cpf) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.registrationDate = registrationDate;
+        this.cpf = cpf;
     }
 
     public UUID getID(){
@@ -64,6 +80,14 @@ public class Seller implements Serializable {
         return access;
     }
 
+    public String getCpf(){
+        return cpf;
+    }
+
+    public Boolean getIsActive(){
+        return isActive;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -82,6 +106,14 @@ public class Seller implements Serializable {
 
     public void setUserAccess(UserAccess userAccess) {
         this.access = userAccess;
+    }
+
+    public void setCpf(String cpf){
+        this.cpf = cpf;
+    }
+
+    public void setIsActive(boolean isActive){
+        this.isActive = isActive;
     }
 
     @Override

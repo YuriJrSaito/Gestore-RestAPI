@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.yurisaito.gestore.dtos.seller.SellerCreateRequestDTO;
 import com.yurisaito.gestore.dtos.seller.SellerResponseDTO;
-import com.yurisaito.gestore.dtos.seller.SellerUpdateRequest;
-import com.yurisaito.gestore.error.ErrorResponse;
-import com.yurisaito.gestore.exception.ProductNotFoundException;
+import com.yurisaito.gestore.dtos.seller.SellerUpdateRequestDTO;
 import com.yurisaito.gestore.services.SellerService;
 
 import jakarta.validation.Valid;
@@ -23,7 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @RestController
@@ -41,40 +39,25 @@ public class SellerController {
 
     @GetMapping("/getOne/{sellerId}")
     public ResponseEntity<?> getSellerById(@PathVariable UUID sellerId) {
-        try {
-            SellerResponseDTO seller = sellerService.getSellerById(sellerId);
-            return ResponseEntity.ok(seller);
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-        }
+        SellerResponseDTO seller = sellerService.getSellerById(sellerId);
+        return ResponseEntity.ok(seller);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createSeller(@RequestParam @Valid SellerCreateRequestDTO dto) {
-        try {
-            //SellerResponseDTO createdSeller = sellerService.createSeller(dto);
-            return new ResponseEntity<>(null, HttpStatus.CREATED);
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-        }
+    public ResponseEntity<?> createSeller(@RequestBody @Valid SellerCreateRequestDTO dto) {
+        SellerResponseDTO createdSeller = sellerService.createSeller(dto);
+        return new ResponseEntity<>(createdSeller, HttpStatus.CREATED);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateSeller(@RequestParam @Valid SellerUpdateRequest dto) {
-        try {
-            //SellerResponseDTO updatedSeller = sellerService.updateSeller(dto);
-            return ResponseEntity.ok(null);
-        } catch (ProductNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(e.getMessage()));
-        }
+    public ResponseEntity<?> updateSeller(@RequestBody @Valid SellerUpdateRequestDTO dto) {
+        SellerResponseDTO updatedSeller = sellerService.updateSeller(dto);
+        return ResponseEntity.ok(updatedSeller);
     }
 
     @DeleteMapping("/delete/{sellerId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteSeller(@PathVariable UUID sellerId) {
-        try {
-            //sellerService.deleteSeller(sellerId);
-        } catch (Exception e) {
-        }
+        sellerService.deleteSeller(sellerId);
     }
 }

@@ -3,8 +3,6 @@ package com.yurisaito.gestore.dtos.seller;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import com.yurisaito.gestore.entity.UserAccess;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,5 +11,6 @@ public record SellerResponseDTO(
         @NotBlank String name,
         @NotBlank String email,
         @NotBlank String phone,
+        @NotBlank String cpf,
         @NotNull LocalDate registrationDate) {
 }

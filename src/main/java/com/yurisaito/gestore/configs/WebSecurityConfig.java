@@ -26,7 +26,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 @EnableMethodSecurity
 public class WebSecurityConfig {
 
-    private static final String[] WHITE_LIST_URL = { "/auth/**" };
+    private static final String[] WHITE_LIST_URL = { "/auth/**", "/api/v1/seller/create" };
 
     @Autowired
     WebSecurityFilter webSecurityFilter;
@@ -47,22 +47,22 @@ public class WebSecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize.requestMatchers(WHITE_LIST_URL).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/product/getAll")
-                        .hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
+                                .hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
                         .requestMatchers(HttpMethod.GET, "/api/v1/product/getOne")
-                        .hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
-                        .requestMatchers(HttpMethod.POST, "/api/v1/product/create").hasAnyAuthority(ADMIN_CREATE.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/product/update").hasAnyAuthority(ADMIN_UPDATE.name())
+                                .hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
+                        .requestMatchers(HttpMethod.POST, "/api/v1/product/create")
+                                .hasAnyAuthority(ADMIN_CREATE.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/product/update")
+                                .hasAnyAuthority(ADMIN_UPDATE.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/product/delete")
-                        .hasAnyAuthority(ADMIN_DELETE.name())
+                                .hasAnyAuthority(ADMIN_DELETE.name())
                         .anyRequest().authenticated())
 
                 .addFilterBefore(webSecurityFilter, UsernamePasswordAuthenticationFilter.class)
-                .cors(Customizer.withDefaults())
                 .logout(logout -> logout.logoutUrl("/user/logout")
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler(
                                 (request, response, authentication) -> SecurityContextHolder.clearContext()))
-                .cors(Customizer.withDefaults())
                 .build();
     }
 }

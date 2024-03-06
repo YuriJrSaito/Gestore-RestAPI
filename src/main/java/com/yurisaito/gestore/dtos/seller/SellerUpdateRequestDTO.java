@@ -6,11 +6,11 @@ import java.util.UUID;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record SellerUpdateRequest(
+public record SellerUpdateRequestDTO(
         @NotNull UUID id,
         @NotBlank String name,
         @NotBlank String email,
         @NotBlank String phone,
         @NotNull LocalDate registrationDate,
-        @NotNull UUID idAccess) {
+        @NotBlank String cpf) {
 }

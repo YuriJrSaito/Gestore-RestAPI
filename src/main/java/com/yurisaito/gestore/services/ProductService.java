@@ -1,6 +1,5 @@
 package com.yurisaito.gestore.services;
 
-import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
