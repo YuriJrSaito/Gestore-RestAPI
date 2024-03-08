@@ -1,6 +1,5 @@
 package com.yurisaito.gestore.dtos.seller;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
@@ -11,6 +10,5 @@ public record SellerUpdateRequestDTO(
         @NotBlank String name,
         @NotBlank String email,
         @NotBlank String phone,
-        @NotNull LocalDate registrationDate,
         @NotBlank String cpf) {
 }

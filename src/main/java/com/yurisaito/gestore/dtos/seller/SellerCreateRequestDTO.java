@@ -1,6 +1,5 @@
 package com.yurisaito.gestore.dtos.seller;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,6 @@ public record SellerCreateRequestDTO(
                 String name,
                 String email,
                 String phone,
-                LocalDate registrationDate,
                 String cpf,
                 @NotNull RegisterDTO access) {
 
@@ -24,7 +22,6 @@ public record SellerCreateRequestDTO(
                 SellerValidationUtil.validateName(name, exceptions);
                 SellerValidationUtil.validateEmail(email, exceptions);
                 SellerValidationUtil.validatePhone(phone, exceptions);
-                SellerValidationUtil.validateRegistrationDate(registrationDate, exceptions);
                 SellerValidationUtil.validateCPF(cpf, exceptions);
 
                 if (!exceptions.isEmpty()) {

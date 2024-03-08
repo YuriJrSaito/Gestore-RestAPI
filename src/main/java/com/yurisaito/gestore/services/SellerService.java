@@ -43,7 +43,7 @@ public class SellerService {
 
     @Transactional
     public SellerResponseDTO createSeller(SellerCreateRequestDTO requestDTO) {
-        requestDTO.validate();
+        //requestDTO.validate();
 
         UserAccess access = authenticationService.register(requestDTO.access());
 

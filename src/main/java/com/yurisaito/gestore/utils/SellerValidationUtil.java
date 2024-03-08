@@ -8,7 +8,7 @@ import com.yurisaito.gestore.exception.ValidationException;
 public class SellerValidationUtil {
 
     public static void validateName(String name, List<ValidationException> exceptions) {
-        if (name.isEmpty() || name.trim().isEmpty()) {
+        if (name.isBlank() || name.trim().isEmpty()) {
             exceptions.add(new ValidationException("Name can't be empty", "name"));
         }
     }
@@ -20,19 +20,19 @@ public class SellerValidationUtil {
     }
 
     public static void validateEmail(String email, List<ValidationException> exceptions) {
-        if (email == null || email.trim().isEmpty()) {
+        if (email.isBlank() || email.trim().isEmpty()) {
             exceptions.add(new ValidationException("Invalid email format", "email"));
         }
     }
 
     public static void validateCPF(String cpf, List<ValidationException> exceptions) {
-        if (cpf == null || cpf.trim().isEmpty()) {
+        if (cpf.isBlank() || cpf.trim().isEmpty()) {
             exceptions.add(new ValidationException("Invalid CPF format", "cpf"));
         }
     }
 
     public static void validatePhone(String phone, List<ValidationException> exceptions) {
-        if (phone.isEmpty() || phone.trim().isEmpty()) {
+        if (phone.isBlank() || phone.trim().isEmpty()) {
             exceptions.add(new ValidationException("Phone can't be empty", "phone"));
         }
         if(!Pattern.matches("\\d{2}-\\d{5}-\\d{4}", phone)){

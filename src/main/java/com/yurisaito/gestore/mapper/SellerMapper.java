@@ -17,7 +17,7 @@ public class SellerMapper {
         if (dto == null) {
             return null;
         }
-        Seller seller = new Seller(dto.name(), dto.email(), dto.phone(), dto.registrationDate(), dto.cpf());
+        Seller seller = new Seller(dto.name(), dto.email(), dto.phone(), dto.cpf());
         return seller;
     }
 
@@ -26,7 +26,7 @@ public class SellerMapper {
             return null;
         }
 
-        Seller seller = new Seller(dto.id(), dto.name(), dto.email(), dto.phone(), dto.registrationDate(), dto.cpf());
+        Seller seller = new Seller(dto.id(), dto.name(), dto.email(), dto.phone(), dto.cpf());
         return seller;
     }
 
