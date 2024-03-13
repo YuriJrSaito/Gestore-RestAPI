@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.yurisaito.gestore.utils.ValidationUtil;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +17,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -30,9 +35,18 @@ public class UserAccess implements UserDetails{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
+
 	@Column(unique = true)
-	private String username;
-	private String password;
+    @NotBlank(message = "Username cannot be blank")
+	@Size(min = 4, message = "Username must have at least 4 characters")
+    private String username;
+    
+    @NotBlank(message = "Password cannot be blank")
+    @Size(min = 8, message = "Password must have at least 8 characters")
+	@Pattern(regexp = "^(?=.*[A-Z]).{8,}$", 
+		message = "Password must have at least 8 characters and contain at least one uppercase letter")
+    private String password;
+
 	private Boolean isLogged;
 	private Boolean active;
 	private Date lastLogin;
@@ -40,16 +54,24 @@ public class UserAccess implements UserDetails{
 	@Enumerated(EnumType.STRING)
 	private UserRole role;
 	
-	public UserAccess() {}
+	public UserAccess() {
+		this.id = UUID.randomUUID();
+		this.active = true;
+		this.isLogged = true;
+	}
 	
 	//register
 	public UserAccess(String username, String password, UserRole role) {
+		this();
 		this.username = username;
 		this.password = password;
-		this.isLogged = false;
-		this.active = true;
 		this.lastLogin = null;
 		this.role = role;
+		validate();
+	}
+
+	private void validate(){
+		ValidationUtil.validateEntity(this);
 	}
 
 	public UserRole getRole() {

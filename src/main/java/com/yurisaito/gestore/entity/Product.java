@@ -4,13 +4,18 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import com.yurisaito.gestore.utils.ValidationUtil;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 @Entity
 @Table(name = "product")
 public class Product implements Serializable {
@@ -20,10 +25,18 @@ public class Product implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+
     private String description;
+
+    @NotNull(message = "Price cannot be empty")
+    @DecimalMin(value = "0.01", message = "Price must be greater than zero")
     private BigDecimal price;
+
+    @Min(value = 0, message = "Stock quantity must be greater than or equal to zero")
     private int stockQuantity;
+
     private String supplier;
     private String imageUrl;
     private boolean active;
@@ -33,25 +46,23 @@ public class Product implements Serializable {
 
     public Product() {
         this.id = UUID.randomUUID();
+        this.active = true;
     }
 
     public Product(String name, String description, BigDecimal price, int stockQuantity,
-                   String supplier, String imageUrl, boolean active, Category category) {
+                   String supplier, String imageUrl) {
         this();
-
         this.name = name;
         this.description = description;
         this.price = price;
         this.stockQuantity = stockQuantity;
         this.supplier = supplier;
         this.imageUrl = imageUrl;
-        this.active = active;
-        this.category = category;
+        validate();
     }
 
     public Product(UUID id, String name, String description, BigDecimal price, int stockQuantity,
                    String supplier, String imageUrl, boolean active, Category category) {
-        
         this.id = id;
         this.name = name;
         this.description = description;
@@ -61,6 +72,11 @@ public class Product implements Serializable {
         this.imageUrl = imageUrl;
         this.active = active;
         this.category = category;
+        validate();
+    }
+
+    private void validate(){
+        ValidationUtil.validateEntity(this);
     }
 
     public void setId(UUID id){

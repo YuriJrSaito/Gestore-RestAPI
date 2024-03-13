@@ -2,14 +2,10 @@ package com.yurisaito.gestore.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.validator.constraints.br.CPF;
-import org.hibernate.validator.internal.engine.path.PathImpl;
-
-import com.yurisaito.gestore.error.ValidationErrorResponse;
-import com.yurisaito.gestore.exception.ValidationException2;
+import com.yurisaito.gestore.utils.ValidationUtil;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -19,10 +15,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,30 +29,30 @@ public class Seller implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @NotBlank(message = "Name can't be empty")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
 
-    @NotBlank(message = "Email can't be empty")
+    @NotBlank(message = "Email cannot be empty")
     @Email(message = "Invalid format")
     private String email;
 
-    @NotBlank(message = "Phone can't be empty")
+    @NotBlank(message = "Phone cannot be empty")
     @Pattern(regexp = "\\d{2}-\\d{5}-\\d{4}", message = "Invalid format. Use XX-XXXXX-XXXX")
     private String phone;
 
-    @NotNull(message = "RegistrationDate can't be null")
+    @NotNull(message = "RegistrationDate cannot be null")
     private LocalDate registrationDate;
 
     @Column(unique = true)
-    @NotBlank(message = "CPF can't be empty")
+    @NotBlank(message = "CPF cannot be empty")
     @CPF(message = "Invalid format")
     private String cpf;
 
-    @NotNull(message = "isActive can't be null")
+    @NotNull(message = "isActive cannot be null")
     private Boolean isActive;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @NotNull(message = "UserAccess can't be null")
+    @NotNull(message = "UserAccess cannot be null")
     private UserAccess access;
 
     public Seller() {
@@ -88,22 +80,7 @@ public class Seller implements Serializable {
     }
 
     private void validate() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Seller>> violations = validator.validate(this);
-
-        if (!violations.isEmpty()) {
-
-            ValidationErrorResponse errorResponse = new ValidationErrorResponse();
-            errorResponse.setMessage("Validation errors occurred");
-
-            for (ConstraintViolation<Seller> violation : violations) {
-                String fieldName = ((PathImpl) violation.getPropertyPath()).getLeafNode().getName();
-                errorResponse.addError(fieldName, violation.getMessage());
-            }
-
-            throw new ValidationException2(errorResponse);
-        }
+        ValidationUtil.validateEntity(this);
     }
 
     public UUID getID() {

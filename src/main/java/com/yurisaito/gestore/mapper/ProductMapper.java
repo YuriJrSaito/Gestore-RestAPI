@@ -25,14 +25,14 @@ public class ProductMapper {
             return null;
         }
 
-        Product product = new Product();
-        product.setName(dto.name());
-        product.setDescription(dto.description());
-        product.setPrice(dto.price());
-        product.setStockQuantity(dto.stockQuantity());
-        product.setSupplier(dto.supplier());
-        product.setImageUrl(dto.imageUrl());
-        product.setActive(dto.active());
+        Product product = new Product(
+            dto.name(),
+            dto.description(),
+            dto.price(),
+            dto.stockQuantity(),
+            dto.supplier(),
+            dto.imageUrl()
+        );
         return product;
     }
 

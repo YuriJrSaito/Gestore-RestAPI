@@ -6,7 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+
+import jakarta.validation.constraints.NotBlank;
 import java.util.UUID;
+import com.yurisaito.gestore.utils.ValidationUtil;
 
 @Entity
 @Table(name = "category")
@@ -17,7 +20,9 @@ public class Category implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private UUID id;
 
+	@NotBlank(message = "Name cannot be blank")
 	private String name;
+	@NotBlank(message = "Description cannot be blank")
 	private String description;
 
 	public Category() {
@@ -28,12 +33,18 @@ public class Category implements Serializable {
 		this();
 		this.name = name;
 		this.description = description;
+		validate();
 	}
 
 	public Category(UUID id, String name, String description) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
+		validate();
+	}
+
+	private void validate() {
+		ValidationUtil.validateEntity(this);
 	}
 
 	public UUID getId() {
@@ -61,7 +72,7 @@ public class Category implements Serializable {
 	}
 
 	@Override
-    public String toString() {
-        return String.format("Category{id=%s, name='%s', description='%s'}", id, name, description);
-    }
+	public String toString() {
+		return String.format("Category{id=%s, name='%s', description='%s'}", id, name, description);
+	}
 }

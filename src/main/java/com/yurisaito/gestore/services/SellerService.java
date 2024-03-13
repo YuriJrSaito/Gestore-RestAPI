@@ -43,8 +43,6 @@ public class SellerService {
 
     @Transactional
     public SellerResponseDTO createSeller(SellerCreateRequestDTO requestDTO) {
-        //requestDTO.validate();
-
         UserAccess access = authenticationService.register(requestDTO.access());
 
         if (sellerRepository.findByCpf(requestDTO.cpf()) != null) {

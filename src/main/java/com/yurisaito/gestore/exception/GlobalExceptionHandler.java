@@ -60,6 +60,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
+    @ExceptionHandler(CustomException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleCustomException(CustomException e) {
+        logException(e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
     @ExceptionHandler(ListValidationException.class)
     public ResponseEntity<Object> handleListValidationException(ListValidationException ex) {
         List<ValidationException> validationExceptions = ex.getValidationExceptions();
